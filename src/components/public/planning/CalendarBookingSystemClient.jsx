@@ -243,7 +243,7 @@ export default function CalendarBookingSystemClient({ seances, user }) {
                         <p className="text-gray-700 mb-2">
                             <strong>Heure :</strong> {new Date(selectedSeance.heure).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                         </p>
-                        <p className="text-gray-700 mb-4"><strong>Prix :</strong> {selectedSeance.credits} crédit ou {selectedSeance.credits * 15000} cfa </p>
+                        <p className="text-gray-700 mb-4"><strong>Prix :</strong> {selectedSeance.credits} crédit ou {selectedSeance.credits * 10000} cfa </p>
 
                         <div className="flex justify-end gap-3">
                             <button onClick={() => setShowModal(false)} className="px-4 py-2 bg-gray-200 rounded-lg">Annuler</button>
