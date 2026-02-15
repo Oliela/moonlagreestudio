@@ -145,6 +145,40 @@ export const popularClasses = [
     level: "Avancé",
     animationDuration: 700
   },
+  {
+    id: 6,
+    title: "MOON ALIGN : HATHA YOGA",
+    subtitle: "",
+    description: "Un cours doux et profond pour ralentir, respirer et se recentrer.À travers des postures tenues et un travail de mobilité, vous améliorez souplesse, équilibre et posture. Idéal pour réduire le stress et compléter vos séances plus intenses.Un moment d’ancrage, phase après phase. ",
+    image: "/img/yoga.jpeg",
+    link: "/public/session-details",
+    category: "Avancé",
+    duration: "60 min",
+    instructor: "Mike Chen",
+    rating: 4.9,
+    students: 203,
+    price: "20€",
+    tags: ["Bases", "Débutant"],
+    level: "Tous niveaux",
+    animationDuration: 700
+  },
+  {
+    id: 7,
+    title: "MOON BALANCE : PILATES MAT",
+    subtitle: "",
+    description: "Renforcement musculaire au sol centré sur le contrôle et l’alignement.Chaque mouvement est exécuté lentement pour activer les muscles profonds et sculpter le corps. Un travail précis, efficace et sans impact. La force dans la maîtrise.",
+    image: "/img/pilates-mat.jpeg",
+    link: "/public/session-details",
+    category: "Avancé",
+    duration: "60 min",
+    instructor: "Mike Chen",
+    rating: 4.9,
+    students: 203,
+    price: "20€",
+    tags: ["Bases", "Débutant"],
+    level: "Tous niveaux",
+    animationDuration: 700
+  },
 ];
 
 export const categories = ["Tous", "Débutant", "Intermédiaire", "Avancé"];

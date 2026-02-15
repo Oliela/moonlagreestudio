@@ -153,7 +153,7 @@ export default function PackPackCardRemake({ pack, user }) {
                         <li>Rechargement instantané</li>
                         <li>Crédits valables {pack.duree} jours</li>
                         <li>Support client </li>
-                        <li> 1 Crédit = 1 Séance de lagree ou pilate mat</li>
+                        <li> 1 crédit = 1 séance (Lagree, Pilates Mat ou Yoga)</li>
                     </ul>
 
                     <div style={{ color: pack?.theme_color ?? "000" }}>
