@@ -95,7 +95,7 @@ export default async function PricingPage() {
                   Vos credits sont automatiquement ajoutes a votre portefeuille
                   Vous pouvez desormais effectuer vos reservations </p>
                 <ul style={{ listStyleType: "disc" }}>
-                  <li>⁠1 crédit = 1 séance sur Microformer. (Sauf cours particuliers)</li>
+                  <li> 3 crédits = 1 Séance de Lagree. (Sauf cours particuliers)</li>
                   <li> ⁠Vos crédits sont valables pendant une période définie (selon le pack choisi).</li>
                   <li>⁠Plus le pack est important, plus le prix par séance est avantageux.</li>
                 </ul>

@@ -1,6 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { faker } from "@faker-js/faker";
+import React, { useState, useEffect, useMemo } from "react";
 import UserHeader from "./UserHeader";
 import UserTable from "./UserTable";
 import UserPagination from "./UserPagination";
@@ -10,23 +9,6 @@ import UserAddModal from "@/components/admin/ui/UserAddModal";
 import { deleteUserAction } from "../../../actions/delete-user.action";
 import UserEditModal from "../ui/UserEditModal";
 import UserWalletModal from "../ui/UserWalletModal";
-
-const generateFakeUsers = (count = 50) => {
-  const roles = ["Project Manager", "Developer", "Support Lead", "Security Officer"];
-  const statuses = ["Active", "Inactive", "Suspended"];
-  return Array.from({ length: count }, (_, index) => ({
-    id: `#USR${String(index + 1).padStart(5, "0")}`,
-    name: faker.person.fullName(),
-    email: faker.internet.email().toLowerCase(),
-    avatar: faker.image.avatar(),
-    role: faker.helpers.arrayElement(roles),
-    status: faker.helpers.arrayElement(statuses),
-    credits: faker.number.int({ min: 0, max: 999 }),
-    points: faker.number.int({ min: 0, max: 999 }),
-    adress: faker.location.street(),
-    phone: faker.phone.number(),
-  }));
-};
 
 export default function AdminUsers({ user }) {
   // --- States globaux ---
@@ -47,34 +29,58 @@ export default function AdminUsers({ user }) {
   const [deleteModal, setDeleteModal] = useState({ show: false, multiple: false, user: null });
   const [selectAll, setSelectAll] = useState(false);
 
-
   useEffect(() => {
-    // setUsers(generateFakeUsers());
     setUsers(user);
-
   }, []);
 
-  // --- Filtrage + tri + pagination ---
-  const filteredUsers = users.filter((u) =>
-    [u.name, u.email, u.id, u.statut_compte].some((field) =>
-      field.toLowerCase().includes(searchQuery.toLowerCase())
-    ) && (statusFilter === "All" || u.statut_compte === statusFilter)
-  );
+  // --- Filtrage : protection contre les champs null/undefined ---
+  const filteredUsers = useMemo(() => {
+    return users.filter((u) => {
+      const matchSearch = [u.name, u.email, String(u.id ?? ""), u.statut_compte].some(
+        (field) => (field ?? "").toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      const matchStatus = statusFilter === "All" || u.statut_compte === statusFilter;
+      return matchSearch && matchStatus;
+    });
+  }, [users, searchQuery, statusFilter]);
 
-  const sortedUsers = [...filteredUsers].sort((a, b) => {
-    if (!sortConfig.key) return 0;
-    const dir = sortConfig.direction === "asc" ? 1 : -1;
-    return a[sortConfig.key] > b[sortConfig.key] ? dir : -dir;
-  });
+  // --- Tri : gestion des champs imbriqués wallet + types string/number ---
+  const sortedUsers = useMemo(() => {
+    if (!sortConfig.key) return filteredUsers;
 
+    return [...filteredUsers].sort((a, b) => {
+      let aVal, bVal;
+
+      // Champs imbriqués dans wallet
+      if (sortConfig.key === "credits") {
+        aVal = a.wallet?.credit ?? 0;
+        bVal = b.wallet?.credit ?? 0;
+      } else if (sortConfig.key === "points") {
+        aVal = a.wallet?.point ?? 0;
+        bVal = b.wallet?.point ?? 0;
+      } else {
+        aVal = a[sortConfig.key] ?? "";
+        bVal = b[sortConfig.key] ?? "";
+      }
+
+      const dir = sortConfig.direction === "asc" ? 1 : -1;
+
+      // Tri alphabétique pour les strings (support accents français)
+      if (typeof aVal === "string" && typeof bVal === "string") {
+        return aVal.localeCompare(bVal, "fr", { sensitivity: "base" }) * dir;
+      }
+
+      // Tri numérique
+      return (aVal - bVal) * dir;
+    });
+  }, [filteredUsers, sortConfig]);
+
+  // --- Pagination ---
   const totalPages = Math.ceil(sortedUsers.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
   const paginatedUsers = sortedUsers.slice(startIndex, startIndex + rowsPerPage);
 
-  // --- Handlers principaux ---
-
-
-  // Toggle select all
+  // --- Handlers ---
   const handleSelectAll = (isChecked) => {
     setSelectAll(isChecked);
     if (isChecked) {
@@ -83,23 +89,23 @@ export default function AdminUsers({ user }) {
       setSelectedUsers([]);
     }
   };
-  const handleSort = (key) =>
+
+  const handleSort = (key) => {
     setSortConfig((prev) => ({
       key,
       direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc",
     }));
+    setCurrentPage(1); // Revenir à la page 1 à chaque nouveau tri
+  };
 
   const handleDelete = async (ids) => {
     try {
-      // Pour suppression multiple
       for (const id of ids) {
         const res = await deleteUserAction({ userId: id });
         if (!res.success) {
           console.error(`Erreur suppression utilisateur ${id}: ${res.error}`);
         }
       }
-
-      // MAJ côté client
       setUsers(users.filter((u) => !ids.includes(u.id)));
       setSelectedUsers([]);
       setDeleteModal({ show: false, multiple: false, user: null });
@@ -108,9 +114,8 @@ export default function AdminUsers({ user }) {
     }
   };
 
-
-  const handleAddUser = (user) => {
-    setUsers([user, ...users]);
+  const handleAddUser = (newUser) => {
+    setUsers([newUser, ...users]);
     setShowAddModal(false);
   };
 
@@ -118,9 +123,9 @@ export default function AdminUsers({ user }) {
     setUsers(users.map((u) => (u.id === updatedUser.id ? updatedUser : u)));
     setShowEditModal(false);
   };
+
   const handleSaveWallet = (updated) => {
     setShowModalWallet(false);
-
     if (updated) {
       window.location.reload();
     }
@@ -128,8 +133,6 @@ export default function AdminUsers({ user }) {
 
   return (
     <>
-
-
       <div className="card">
         <UserHeader
           searchQuery={searchQuery}
@@ -154,21 +157,18 @@ export default function AdminUsers({ user }) {
           onSelectAll={handleSelectAll}
           onSort={handleSort}
           sortConfig={sortConfig}
-          onEdit={(user) => {
-            setSelectedUser(user);
+          onEdit={(u) => {
+            setSelectedUser(u);
             setShowEditModal(true);
-
           }}
-          onWallet={(user) => {
-            setSelectedUser(user);
+          onWallet={(u) => {
+            setSelectedUser(u);
             setShowModalWallet(true);
-
           }}
-          onDelete={(user) =>
-            setDeleteModal({ show: true, multiple: false, user })
+          onDelete={(u) =>
+            setDeleteModal({ show: true, multiple: false, user: u })
           }
         />
-
 
         <UserPagination
           totalPages={totalPages}

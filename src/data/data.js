@@ -390,7 +390,7 @@ export const faqData = {
         question: "À quoi servent mes points de fidélité ?",
         answers: [
           {
-            r1: "À chaque achat de credit  vous cumulez des points de fidélité. 1 credit = 100 Points de fidélité. Ces points peuvent etre échanger en credits par la suite, 2.000 points de fidélité = 1 credit offert soit 1 seance offerte. Votre solde de points de fidélité est visible directement dans votre compte.",
+            r1: "À chaque achat de credit  vous cumulez des points de fidélité. 1 credit = 100 Points de fidélité. Ces points peuvent etre échanger en credits par la suite, 6.000 points de fidélité = 1 seance offerte. Votre solde de points de fidélité est visible directement dans votre compte.",
           }
         ]
       }

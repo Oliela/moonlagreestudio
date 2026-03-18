@@ -1,11 +1,21 @@
 import React from "react";
 
+// Icône dynamique selon la colonne active et la direction
+const SortIcon = ({ column, sortConfig }) => {
+  if (sortConfig?.key !== column) {
+    return <i className="bi bi-arrow-down-up text-muted ms-1" style={{ fontSize: "11px" }} />;
+  }
+  return sortConfig.direction === "asc"
+    ? <i className="bi bi-arrow-up ms-1 text-primary" style={{ fontSize: "11px" }} />
+    : <i className="bi bi-arrow-down ms-1 text-primary" style={{ fontSize: "11px" }} />;
+};
+
 export default function UserTable({
   users,
   selectedUsers,
   setSelectedUsers,
-  onSort,
   sortConfig,
+  onSort,
   onEdit,
   onWallet,
   onDelete,
@@ -23,9 +33,6 @@ export default function UserTable({
       setSelectedUsers([]);
     }
   };
-  // console.log(users);
-
-  
 
   return (
     <div className="table-responsive">
@@ -36,25 +43,34 @@ export default function UserTable({
               <input
                 type="checkbox"
                 onChange={selectAll}
-                checked={
-                  users.length > 0 && selectedUsers.length === users.length
-                }
+                checked={users.length > 0 && selectedUsers.length === users.length}
               />
             </th>
+
             <th onClick={() => onSort("name")} style={{ cursor: "pointer" }}>
-              Utilisateur <i className="bi bi-arrow-down-up"></i>
+              Utilisateur <SortIcon column="name" sortConfig={sortConfig} />
             </th>
-            <th onClick={() => onSort("phone")} style={{ cursor: "pointer" }}>
-              Téléphone<i className="bi bi-arrow-down-up"></i> </th>
-            <th onClick={() => onSort("adress")} style={{ cursor: "pointer" }}>
-              Adresse <i className="bi bi-arrow-down-up"></i>
+
+            {/* ✅ Clé corrigée : "telephone" (correspond à user.telephone dans le tbody) */}
+            <th onClick={() => onSort("telephone")} style={{ cursor: "pointer" }}>
+              Téléphone <SortIcon column="telephone" sortConfig={sortConfig} />
             </th>
+
+            {/* ✅ Clé corrigée : "adresse" (correspond à user.adresse dans le tbody) */}
+            <th onClick={() => onSort("adresse")} style={{ cursor: "pointer" }}>
+              Adresse <SortIcon column="adresse" sortConfig={sortConfig} />
+            </th>
+
+            {/* "credits" → résolu dans le parent via wallet.credit */}
             <th onClick={() => onSort("credits")} style={{ cursor: "pointer" }}>
-              Crédits <i className="bi bi-arrow-down-up"></i>
+              Crédits <SortIcon column="credits" sortConfig={sortConfig} />
             </th>
+
+            {/* "points" → résolu dans le parent via wallet.point */}
             <th onClick={() => onSort("points")} style={{ cursor: "pointer" }}>
-              Points <i className="bi bi-arrow-down-up"></i>
+              Points <SortIcon column="points" sortConfig={sortConfig} />
             </th>
+
             <th>Status</th>
             <th className="text-center">Actions</th>
           </tr>
@@ -71,11 +87,10 @@ export default function UserTable({
                     onChange={() => toggleSelect(user.id)}
                   />
                 </td>
+
                 <td>
                   <div className="d-flex align-items-center gap-2">
                     <img
-                      // src={user.image}
-                      // src={user?.image ? `/uploads/${user.image}` : "/img/user-img.jpg"}
                       src={user?.image ? user.image : "/img/user-img.jpg"}
                       alt={user.name}
                       style={{ height: "40px", width: "40px" }}
@@ -87,11 +102,12 @@ export default function UserTable({
                     </div>
                   </div>
                 </td>
+
                 <td>{user.telephone}</td>
                 <td>{user.adresse}</td>
                 <td>{user.wallet?.credit}</td>
                 <td>{user.wallet?.point}</td>
-                {/* <td>{user.statut_compte}</td> */}
+
                 <td>
                   {user.statut_compte === "actif" && (
                     <span className="badge" style={{ color: "#008000", backgroundColor: "#d1e7dd" }}>
@@ -99,7 +115,7 @@ export default function UserTable({
                     </span>
                   )}
                   {user.statut_compte === "inactif" && (
-                    <span className="badge" style={{ color: "#ffc107", backgroundColor: "#fff3cd" }}>
+                    <span className="badge" style={{ color: "#856404", backgroundColor: "#fff3cd" }}>
                       Inactive
                     </span>
                   )}
@@ -114,22 +130,20 @@ export default function UserTable({
                   <button
                     className="btn btn-sm btn-primary me-1"
                     onClick={() => onWallet(user)}
-                    // disabled={user.role === "admin"} // 👈 désactive pour admin
                   >
                     <i className="bi bi-wallet"></i>
                   </button>
                   <button
                     className="btn btn-sm btn-primary me-1"
                     onClick={() => onEdit(user)}
-                    disabled={user.role === "admin"} // 👈 désactive pour admin
+                    disabled={user.role === "admin"}
                   >
                     <i className="bi bi-pencil-square"></i>
                   </button>
-
                   <button
                     className="btn btn-sm btn-danger"
                     onClick={() => onDelete(user)}
-                    disabled={user.role === "admin"} // 👈 désactive aussi
+                    disabled={user.role === "admin"}
                     title={user.role === "admin" ? "Impossible de supprimer un admin" : ""}
                   >
                     <i className="bi bi-trash3"></i>
@@ -139,7 +153,7 @@ export default function UserTable({
             ))
           ) : (
             <tr>
-              <td colSpan="7" className="text-center py-3 text-muted">
+              <td colSpan="8" className="text-center py-3 text-muted">
                 Aucun utilisateur trouvé
               </td>
             </tr>

@@ -10,7 +10,7 @@ export default function SessionAddModal({ onClose, onAdd, teachers = [], session
     coatch: "",
     date: "",
     heure: "",
-    credits: 1,
+    credits: 3,
     places: 6,
   });
   const router = useRouter();
