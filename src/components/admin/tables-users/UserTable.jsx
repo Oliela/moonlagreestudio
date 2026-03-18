@@ -154,7 +154,7 @@ export default function UserTable({
           ) : (
             <tr>
               <td colSpan="8" className="text-center py-3 text-muted">
-                Aucun utilisateur trouvé
+                Aucun utilisateur trouvé dans la base de données.
               </td>
             </tr>
           )}
