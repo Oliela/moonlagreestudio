@@ -23,8 +23,8 @@ export default function ConditionalLayout({ children }) {
     '/admin/plannings',
     '/admin/reservations',
     '/admin/packs',
-
   ];
+  
   const hideLayout = noLayoutPages.includes(pathname);
 
   if (hideLayout) {
